@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/09currencyapi.iml" filepath="$PROJECT_DIR$/09currencyapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/09currencyapi.main.iml" filepath="$PROJECT_DIR$/.idea/modules/09currencyapi.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/09currencyapi.test.iml" filepath="$PROJECT_DIR$/.idea/modules/09currencyapi.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/react-learning.iml" filepath="$PROJECT_DIR$/.idea/react-learning.iml" />
     </modules>
   </component>
