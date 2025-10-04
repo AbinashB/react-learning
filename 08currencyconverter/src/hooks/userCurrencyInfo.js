@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-function userCurrencyInfo(currency){
+function useCurrencyInfo(currency){
   const [data,setData] = useState({})
   useEffect(()=> {
     fetch(`http://localhost:8080/api/${currency}`)
@@ -13,4 +13,4 @@ function userCurrencyInfo(currency){
   return data
 }
 
-export default userCurrencyInfo;  
+export default useCurrencyInfo;  

@@ -1,14 +1,13 @@
 package org.example.service
 
 import org.example.model.CurrencyResponse
-import org.springframework.stereotype.Service
 
-@Service
 class CurrencyService {
 
     // Mock exchange rates - in a real application, you would fetch these from an external API
     private val exchangeRates = mapOf(
         "USD" to mapOf(
+            "USD" to 1.0,
             "INR" to 83.25,
             "EUR" to 0.92,
             "GBP" to 0.79,
@@ -21,6 +20,7 @@ class CurrencyService {
             "KRW" to 1320.50
         ),
         "EUR" to mapOf(
+            "EUR" to 1.0,
             "USD" to 1.09,
             "INR" to 90.75,
             "GBP" to 0.86,
@@ -33,6 +33,7 @@ class CurrencyService {
             "KRW" to 1440.30
         ),
         "GBP" to mapOf(
+            "GBP" to 1.0,
             "USD" to 1.27,
             "INR" to 105.50,
             "EUR" to 1.16,
@@ -45,6 +46,7 @@ class CurrencyService {
             "KRW" to 1675.40
         ),
         "INR" to mapOf(
+            "INR" to 1.0,
             "USD" to 0.012,
             "EUR" to 0.011,
             "GBP" to 0.0095,
@@ -57,6 +59,7 @@ class CurrencyService {
             "KRW" to 15.87
         ),
         "JPY" to mapOf(
+            "JPY" to 1.0,
             "USD" to 0.0067,
             "INR" to 0.56,
             "EUR" to 0.0061,
@@ -69,6 +72,7 @@ class CurrencyService {
             "KRW" to 8.83
         ),
         "CNY" to mapOf(
+            "CNY" to 1.0,
             "USD" to 0.138,
             "INR" to 11.50,
             "EUR" to 0.127,

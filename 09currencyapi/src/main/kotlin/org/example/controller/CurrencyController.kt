@@ -1,45 +1,59 @@
 package org.example.controller
 
-import org.example.model.CurrencyResponse
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import org.example.model.*
 import org.example.service.CurrencyService
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
 
-@RestController
-@RequestMapping("/api")
 class CurrencyController(private val currencyService: CurrencyService) {
-
-    @GetMapping("/{currencyCode}")
-    fun getCurrencyRates(@PathVariable currencyCode: String): ResponseEntity<Any> {
-        val response = currencyService.getConversionRates(currencyCode)
-        
-        return if (response != null) {
-            // Format response as requested: {usd: {inr: 1, cny: 2, etc}}
-            val formattedResponse = mapOf(currencyCode.lowercase() to response.rates.mapKeys { it.key.lowercase() })
-            ResponseEntity.ok(formattedResponse)
-        } else {
-            val errorResponse = mapOf(
-                "error" to "Currency not supported",
-                "message" to "The currency code '$currencyCode' is not supported",
-                "supportedCurrencies" to currencyService.getSupportedCurrencies().map { it.lowercase() }
-            )
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+    
+    fun configureRoutes(routing: Routing) {
+        routing.route("/api") {
+                // Get currency conversion rates
+                get("/{currencyCode}") {
+                    val currencyCode = call.parameters["currencyCode"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid request", "Currency code is required")
+                    )
+                    
+                    val response = currencyService.getConversionRates(currencyCode)
+                    
+                    if (response != null) {
+                        // Format response as requested: {usd: {inr: 1, cny: 2, etc}}
+                        val formattedResponse = mapOf(
+                            currencyCode.lowercase() to response.rates.mapKeys { it.key.lowercase() }
+                        )
+                        call.respond(HttpStatusCode.OK, formattedResponse)
+                    } else {
+                        val errorResponse = ErrorResponse(
+                            error = "Currency not supported",
+                            message = "The currency code '$currencyCode' is not supported",
+                            supportedCurrencies = currencyService.getSupportedCurrencies().map { it.lowercase() }
+                        )
+                        call.respond(HttpStatusCode.BadRequest, errorResponse)
+                    }
+                }
+                
+                // Get supported currencies
+                get("/currencies") {
+                    val supportedCurrencies = currencyService.getSupportedCurrencies().map { it.lowercase() }
+                    val response = SupportedCurrenciesResponse(
+                        supportedCurrencies = supportedCurrencies,
+                        count = supportedCurrencies.size
+                    )
+                    call.respond(HttpStatusCode.OK, response)
+                }
+                
+                // Health check
+                get("/health") {
+                    val response = HealthResponse(
+                        status = "UP",
+                        service = "Currency Converter API"
+                    )
+                    call.respond(HttpStatusCode.OK, response)
+                }
         }
-    }
-
-    @GetMapping("/currencies")
-    fun getSupportedCurrencies(): ResponseEntity<Map<String, Any>> {
-        val supportedCurrencies = currencyService.getSupportedCurrencies().map { it.lowercase() }
-        val response = mapOf(
-            "supportedCurrencies" to supportedCurrencies,
-            "count" to supportedCurrencies.size
-        )
-        return ResponseEntity.ok(response)
-    }
-
-    @GetMapping("/health")
-    fun healthCheck(): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.ok(mapOf("status" to "UP", "service" to "Currency Converter API"))
     }
 }

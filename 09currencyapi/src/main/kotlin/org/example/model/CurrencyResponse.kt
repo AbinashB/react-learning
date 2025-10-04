@@ -1,11 +1,28 @@
 package org.example.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CurrencyResponse(
     val baseCurrency: String,
     val rates: Map<String, Double>
 )
 
-data class CurrencyRate(
-    val code: String,
-    val rate: Double
+@Serializable
+data class SupportedCurrenciesResponse(
+    val supportedCurrencies: List<String>,
+    val count: Int
+)
+
+@Serializable
+data class HealthResponse(
+    val status: String,
+    val service: String
+)
+
+@Serializable
+data class ErrorResponse(
+    val error: String,
+    val message: String,
+    val supportedCurrencies: List<String>? = null
 )

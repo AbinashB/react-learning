@@ -1,6 +1,6 @@
 # Currency Converter API
 
-A simple REST API built with Kotlin and Spring Boot that provides currency conversion rates.
+A simple REST API built with vanilla Kotlin and Ktor that provides currency conversion rates.
 
 ## Features
 
@@ -71,7 +71,7 @@ GET /api/health
 1. Make sure you have Java 17+ installed
 2. Run the application:
    ```bash
-   ./gradlew bootRun
+   ./gradlew run
    ```
 3. The API will be available at `http://localhost:8080`
 
@@ -94,6 +94,13 @@ GET /api/health
 - CHF (Swiss Franc)
 - SGD (Singapore Dollar)
 - KRW (South Korean Won)
+
+## Technology Stack
+
+- **Kotlin** - Programming language
+- **Ktor** - Lightweight web framework for Kotlin
+- **Kotlinx Serialization** - JSON serialization
+- **Netty** - HTTP server engine
 
 ## Note
 
