@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@example.com
+    name: Currency Converter API
+  description: |-
+    A simple REST API built with Kotlin and Spring Boot that provides currency conversion rates.
+
+    ## Features
+    - Get conversion rates for a specific base currency
+    - Returns rates in the format: `{currencycode: {inr: 1, cny: 2, etc}}`
+    - Support for major currencies (USD, EUR, GBP, INR, JPY, CNY, CAD, AUD, CHF, SGD, KRW)
+    - Health check endpoint
+    - List supported currencies
+
+    ## Note
+    This API uses mock exchange rates for demonstration purposes. In a production environment, you would integrate with a real currency exchange rate API like Fixer.io, CurrencyLayer, or similar services.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Currency Converter API
+  version: 1.0.0
+externalDocs:
+  description: Find more info about currency codes
+  url: https://en.wikipedia.org/wiki/ISO_4217
+servers:
+- description: Development server
+  url: http://localhost:8080
+- description: Production server
+  url: https://api.example.com
+tags:
+- description: Operations related to currency conversion rates
+  name: Currency Conversion
+- description: Operations to get information about supported currencies
+  name: Currency Information
+- description: API health monitoring endpoints
+  name: Health Check
+paths:
+  /api/{currencyCode}:
+    get:
+      description: Retrieves conversion rates for a specific base currency. Returns
+        exchange rates from the base currency to all other supported currencies.
+      operationId: getCurrencyRates
+      parameters:
+      - description: The base currency code (case-insensitive)
+        examples:
+          usd:
+            summary: US Dollar
+            value: usd
+          eur:
+            summary: Euro
+            value: eur
+          gbp:
+            summary: British Pound
+            value: gbp
+          inr:
+            summary: Indian Rupee
+            value: inr
+        explode: false
+        in: path
+        name: currencyCode
+        required: true
+        schema:
+          example: usd
+          pattern: "^[A-Za-z]{3}$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                usd_rates:
+                  summary: USD conversion rates
+                  value:
+                    usd:
+                      usd: 1.0
+                      inr: 83.25
+                      eur: 0.92
+                      gbp: 0.79
+                      jpy: 149.5
+                      cny: 7.24
+                      cad: 1.36
+                      aud: 1.53
+                      chf: 0.88
+                      sgd: 1.35
+                      krw: 1320.5
+                eur_rates:
+                  summary: EUR conversion rates
+                  value:
+                    eur:
+                      eur: 1.0
+                      usd: 1.09
+                      inr: 90.75
+                      gbp: 0.86
+                      jpy: 163.2
+                      cny: 7.89
+                      cad: 1.48
+                      aud: 1.67
+                      chf: 0.96
+                      sgd: 1.47
+                      krw: 1440.3
+              schema:
+                $ref: "#/components/schemas/CurrencyRatesResponse"
+          description: Successful response with currency conversion rates
+        "400":
+          content:
+            application/json:
+              example:
+                error: Currency not supported
+                message: The currency code 'xyz' is not supported
+                supportedCurrencies:
+                - usd
+                - eur
+                - gbp
+                - inr
+                - jpy
+                - cny
+                - cad
+                - aud
+                - chf
+                - sgd
+                - krw
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Currency not supported
+      summary: Get currency conversion rates
+      tags:
+      - Currency Conversion
+  /api/currencies:
+    get:
+      description: Returns a list of all supported currency codes along with the count
+      operationId: getSupportedCurrencies
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                supportedCurrencies:
+                - usd
+                - eur
+                - gbp
+                - inr
+                - jpy
+                - cny
+                - cad
+                - aud
+                - chf
+                - sgd
+                - krw
+                count: 11
+              schema:
+                $ref: "#/components/schemas/SupportedCurrenciesResponse"
+          description: Successful response with supported currencies
+      summary: Get supported currencies
+      tags:
+      - Currency Information
+  /api/health:
+    get:
+      description: Returns the health status of the API service
+      operationId: healthCheck
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                status: UP
+                service: Currency Converter API
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+          description: Service is healthy
+      summary: Health check endpoint
+      tags:
+      - Health Check
+components:
+  schemas:
+    CurrencyRatesResponse:
+      additionalProperties:
+        additionalProperties:
+          description: Exchange rate from base currency to target currency
+          format: double
+          type: number
+        type: object
+      description: Response containing currency conversion rates
+      example:
+        usd:
+          usd: 1.0
+          inr: 83.25
+          eur: 0.92
+          gbp: 0.79
+          jpy: 149.5
+          cny: 7.24
+          cad: 1.36
+          aud: 1.53
+          chf: 0.88
+          sgd: 1.35
+          krw: 1320.5
+      type: object
+    SupportedCurrenciesResponse:
+      example:
+        supportedCurrencies:
+        - usd
+        - eur
+        - gbp
+        - inr
+        - jpy
+        - cny
+        - cad
+        - aud
+        - chf
+        - sgd
+        - krw
+        count: 11
+      properties:
+        supportedCurrencies:
+          description: List of supported currency codes in lowercase
+          example:
+          - usd
+          - eur
+          - gbp
+          - inr
+          - jpy
+          - cny
+          - cad
+          - aud
+          - chf
+          - sgd
+          - krw
+          items:
+            pattern: "^[a-z]{3}$"
+            type: string
+          type: array
+        count:
+          description: Total number of supported currencies
+          example: 11
+          type: integer
+      required:
+      - count
+      - supportedCurrencies
+      type: object
+    HealthResponse:
+      example:
+        service: Currency Converter API
+        status: UP
+      properties:
+        status:
+          description: Health status of the service
+          enum:
+          - UP
+          - DOWN
+          example: UP
+          type: string
+        service:
+          description: Name of the service
+          example: Currency Converter API
+          type: string
+      required:
+      - service
+      - status
+      type: object
+    ErrorResponse:
+      example:
+        supportedCurrencies:
+        - usd
+        - eur
+        - gbp
+        - inr
+        - jpy
+        - cny
+        - cad
+        - aud
+        - chf
+        - sgd
+        - krw
+        error: Currency not supported
+        message: The currency code 'xyz' is not supported
+      properties:
+        error:
+          description: Error type
+          example: Currency not supported
+          type: string
+        message:
+          description: Detailed error message
+          example: The currency code 'xyz' is not supported
+          type: string
+        supportedCurrencies:
+          description: List of supported currency codes (present in currency-related
+            errors)
+          example:
+          - usd
+          - eur
+          - gbp
+          - inr
+          - jpy
+          - cny
+          - cad
+          - aud
+          - chf
+          - sgd
+          - krw
+          items:
+            pattern: "^[a-z]{3}$"
+            type: string
+          type: array
+      required:
+      - error
+      - message
+      type: object
+
