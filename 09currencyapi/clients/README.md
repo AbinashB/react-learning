@@ -57,27 +57,69 @@ All clients support these endpoints:
 
 ## 🔧 Configuration
 
-### Base URL
-All clients are configured to use `http://localhost:8080` by default. Update the base URL in your code:
+All clients now read configuration from files instead of hardcoded values. You can override settings using environment variables.
+
+### Configuration Files
+
+**Scala:** `src/main/resources/application.conf`
+```hocon
+currency-converter-client {
+  base-url = "http://localhost:8080"
+  base-url = ${?CURRENCY_API_BASE_URL}  # Override with env var
+  http {
+    timeout = 30 seconds
+    connection-timeout = 10 seconds
+  }
+}
+```
+
+**Kotlin:** `src/main/resources/application.properties`
+```properties
+currency.api.base-url=http://localhost:8080
+currency.api.timeout=30000
+currency.api.connection-timeout=10000
+```
+
+**.NET:** `src/CurrencyConverter.Client/appsettings.json`
+```json
+{
+  "CurrencyConverterClient": {
+    "BaseUrl": "http://localhost:8080",
+    "Http": {
+      "TimeoutSeconds": 30,
+      "ConnectionTimeoutSeconds": 10
+    }
+  }
+}
+```
+
+### Environment Variables
+Override any setting using environment variables:
+```bash
+export CURRENCY_API_BASE_URL="https://your-api-domain.com"
+```
+
+### Using Configuration in Code
 
 **Scala:**
 ```scala
-val basePath = "https://your-api-domain.com"
+import org.openapitools.client.config.ClientConfig
+val basePath = ClientConfig.baseUrl
 val api = CurrencyConversionApi(basePath)
 ```
 
 **Kotlin:**
 ```kotlin
-val basePath = "https://your-api-domain.com"
+import com.example.currency.client.config.ClientConfig
+val basePath = ClientConfig.baseUrl
 val api = CurrencyConversionApi(basePath)
 ```
 
 **.NET:**
 ```csharp
-var configuration = new Configuration
-{
-    BasePath = "https://your-api-domain.com"
-};
+using CurrencyConverter.Client.Config;
+var config = ClientConfig.Instance;
+var configuration = new Configuration { BasePath = config.BaseUrl };
 var api = new CurrencyConversionApi(configuration);
 ```
 
@@ -87,7 +129,9 @@ var api = new CurrencyConversionApi(configuration);
 
 **Scala:**
 ```scala
-val rates = currencyConversionApi.getCurrencyRates("usd")
+import org.openapitools.client.config.ClientConfig
+val api = CurrencyConversionApi(ClientConfig.baseUrl)
+val rates = api.getCurrencyRates("usd")
 rates.onComplete {
   case Success(data) => println(s"USD rates: $data")
   case Failure(ex) => println(s"Error: ${ex.getMessage}")
@@ -96,7 +140,9 @@ rates.onComplete {
 
 **Kotlin:**
 ```kotlin
-val rates = currencyConversionApi.getCurrencyRates("usd")
+import com.example.currency.client.config.ClientConfig
+val api = CurrencyConversionApi(ClientConfig.baseUrl)
+val rates = api.getCurrencyRates("usd")
 rates.forEach { (currency, rateMap) ->
     println("$currency rates: $rateMap")
 }
@@ -104,7 +150,10 @@ rates.forEach { (currency, rateMap) ->
 
 **.NET:**
 ```csharp
-var rates = await currencyConversionApi.GetCurrencyRatesAsync("usd");
+using CurrencyConverter.Client.Config;
+var config = ClientConfig.Instance;
+var api = new CurrencyConversionApi(new Configuration { BasePath = config.BaseUrl });
+var rates = await api.GetCurrencyRatesAsync("usd");
 foreach (var pair in rates)
 {
     Console.WriteLine($"{pair.Key} rates: {pair.Value}");
@@ -115,7 +164,9 @@ foreach (var pair in rates)
 
 **Scala:**
 ```scala
-val currencies = currencyInformationApi.getSupportedCurrencies()
+import org.openapitools.client.config.ClientConfig
+val api = CurrencyInformationApi(ClientConfig.baseUrl)
+val currencies = api.getSupportedCurrencies()
 currencies.onComplete {
   case Success(data) => println(s"Supported: ${data.supportedCurrencies}")
   case Failure(ex) => println(s"Error: ${ex.getMessage}")
@@ -124,13 +175,18 @@ currencies.onComplete {
 
 **Kotlin:**
 ```kotlin
-val currencies = currencyInformationApi.getSupportedCurrencies()
+import com.example.currency.client.config.ClientConfig
+val api = CurrencyInformationApi(ClientConfig.baseUrl)
+val currencies = api.getSupportedCurrencies()
 println("Supported currencies: ${currencies.supportedCurrencies}")
 ```
 
 **.NET:**
 ```csharp
-var currencies = await currencyInformationApi.GetSupportedCurrenciesAsync();
+using CurrencyConverter.Client.Config;
+var config = ClientConfig.Instance;
+var api = new CurrencyInformationApi(new Configuration { BasePath = config.BaseUrl });
+var currencies = await api.GetSupportedCurrenciesAsync();
 Console.WriteLine($"Supported currencies: {string.Join(", ", currencies.SupportedCurrencies)}");
 ```
 

@@ -1,17 +1,27 @@
 // Kotlin Usage Example for Currency Converter API Client
-// Using OkHttp4 client
+// Using OkHttp4 client with Configuration
 
 import com.example.currency.client.apis.CurrencyConversionApi
 import com.example.currency.client.apis.CurrencyInformationApi
 import com.example.currency.client.apis.HealthCheckApi
 import com.example.currency.client.infrastructure.ApiClient
+import com.example.currency.client.config.ClientConfig
 import kotlinx.coroutines.runBlocking
 
 fun main() {
     println("=== Currency Converter API Client - Kotlin Example ===")
     
-    // Configure the API client
-    val basePath = "http://localhost:8080"
+    // Print configuration for debugging
+    ClientConfig.printConfig()
+    
+    // Validate configuration
+    if (!ClientConfig.validateConfig()) {
+        println("Configuration validation failed. Exiting...")
+        return
+    }
+    
+    // Configure the API client using configuration
+    val basePath = ClientConfig.baseUrl
     val apiClient = ApiClient(basePath = basePath)
     
     // Initialize API clients

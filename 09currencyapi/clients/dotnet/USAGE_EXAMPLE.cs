@@ -1,10 +1,12 @@
 // C# .NET Core Usage Example for Currency Converter API Client
+// Using Configuration
 
 using System;
 using System.Threading.Tasks;
 using CurrencyConverter.Client.Api;
 using CurrencyConverter.Client.Client;
 using CurrencyConverter.Client.Model;
+using CurrencyConverter.Client.Config;
 
 namespace CurrencyConverter.Example
 {
@@ -14,12 +16,23 @@ namespace CurrencyConverter.Example
         {
             Console.WriteLine("=== Currency Converter API Client - .NET Core Example ===");
             
-            // Configure the API client
-            var basePath = "http://localhost:8080";
+            // Load and print configuration for debugging
+            var clientConfig = ClientConfig.Instance;
+            clientConfig.PrintConfig();
+            
+            // Validate configuration
+            if (!clientConfig.ValidateConfig())
+            {
+                Console.WriteLine("Configuration validation failed. Exiting...");
+                return;
+            }
+            
+            // Configure the API client using configuration
+            var basePath = clientConfig.BaseUrl;
             var configuration = new Configuration
             {
                 BasePath = basePath,
-                Timeout = 30000 // 30 seconds timeout
+                Timeout = clientConfig.HttpTimeoutSeconds * 1000 // Convert to milliseconds
             };
             
             // Initialize API clients

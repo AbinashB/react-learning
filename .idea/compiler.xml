@@ -7,11 +7,4 @@
       <module name="09currencyapi.test" target="17" />
     </bytecodeTargetLevel>
   </component>
-  <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="09currencyapi" options="-parameters" />
-      <module name="09currencyapi.main" options="-parameters" />
-      <module name="09currencyapi.test" options="-parameters" />
-    </option>
-  </component>
 </project>

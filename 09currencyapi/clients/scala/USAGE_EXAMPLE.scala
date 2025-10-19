@@ -1,8 +1,9 @@
 // Scala Usage Example for Currency Converter API Client
-// Using Akka HTTP client
+// Using Akka HTTP client with Configuration
 
 import org.openapitools.client.api.{CurrencyConversionApi, CurrencyInformationApi, HealthCheckApi}
 import org.openapitools.client.core.ApiInvoker
+import org.openapitools.client.config.ClientConfig
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,8 +15,11 @@ object CurrencyConverterExample extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContext = system.dispatcher
   
-  // Configure the API client
-  val basePath = "http://localhost:8080"
+  // Print configuration for debugging
+  ClientConfig.printConfig()
+  
+  // Configure the API client using configuration
+  val basePath = ClientConfig.baseUrl
   val apiInvoker = ApiInvoker(basePath)
   
   // Initialize API clients

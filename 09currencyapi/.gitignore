@@ -1,0 +1,13 @@
+# Build directories
+build/
+.gradle/
+
+# IDE
+.idea/
+
+# Client build directories
+clients/*/build/
+clients/*/.gradle/
+
+# OS
+.DS_Store
