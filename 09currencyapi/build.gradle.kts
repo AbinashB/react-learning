@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.serialization") version "1.9.25"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     application
 }
 
@@ -40,9 +40,9 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
