@@ -25,6 +25,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
     implementation("io.ktor:ktor-server-cors:2.3.5")
     implementation("io.ktor:ktor-server-call-logging:2.3.5")
+    implementation("io.ktor:ktor-server-status-pages:2.3.5")
     
     // Static file serving for Swagger UI (if needed)
     // implementation("io.ktor:ktor-server-webjars:2.3.5")

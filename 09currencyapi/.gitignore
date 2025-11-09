@@ -9,5 +9,9 @@ build/
 clients/*/build/
 clients/*/.gradle/
 
+# Logs
+logs/
+*.log
+
 # OS
 .DS_Store

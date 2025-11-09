@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import org.example.config.PluginConfig.configurePlugins
 import org.example.config.SwaggerConfig.configureSwaggerRoutes
+import org.example.config.LoggingInterceptor.configureRequestResponseLogging
 import org.example.controller.CurrencyController
 import org.example.service.CurrencyService
 
@@ -27,6 +28,7 @@ object AppConfig {
     fun Application.configureApplication() {
         // Configure all application components
         configurePlugins()
+        configureRequestResponseLogging() // Add detailed request/response logging
         configureServices()
     }
 }
