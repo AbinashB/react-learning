@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # First instance of the currency API
+  currency-api-1:
+    build: .
+    container_name: currency-api-instance-1
+    environment:
+      - INSTANCE_NAME=Instance-1
+    ports:
+      - "8081:8080"  # Map host port 8081 to container port 8080
+    networks:
+      - currency-network
+    restart: unless-stopped
+
+  # Second instance of the currency API
+  currency-api-2:
+    build: .
+    container_name: currency-api-instance-2
+    environment:
+      - INSTANCE_NAME=Instance-2
+    ports:
+      - "8082:8080"  # Map host port 8082 to container port 8080
+    networks:
+      - currency-network
+    restart: unless-stopped
+
+  # Nginx as load balancer
+  nginx-lb:
+    image: nginx:alpine
+    container_name: currency-api-loadbalancer
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"  # Expose load balancer on port 8080
+    depends_on:
+      - currency-api-1
+      - currency-api-2
+    networks:
+      - currency-network
+    restart: unless-stopped
+
+networks:
+  currency-network:
+    driver: bridge
+
