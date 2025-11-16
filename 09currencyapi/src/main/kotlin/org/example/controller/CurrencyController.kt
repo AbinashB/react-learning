@@ -6,10 +6,21 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.example.model.*
 import org.example.service.CurrencyService
+import org.example.util.VersionUtil
 
 class CurrencyController(private val currencyService: CurrencyService) {
     
     fun configureRoutes(routing: Routing) {
+        // Root index route - healthcheck
+        routing.get("/") {
+            val response = HealthResponse(
+                status = "UP",
+                service = "Currency Converter API",
+                version = VersionUtil.getVersion()
+            )
+            call.respond(HttpStatusCode.OK, response)
+        }
+        
         routing.route("/api") {
                 // Get currency conversion rates
                 get("/{currencyCode}") {
@@ -50,7 +61,8 @@ class CurrencyController(private val currencyService: CurrencyService) {
                 get("/health") {
                     val response = HealthResponse(
                         status = "UP",
-                        service = "Currency Converter API"
+                        service = "Currency Converter API",
+                        version = VersionUtil.getVersion()
                     )
                     call.respond(HttpStatusCode.OK, response)
                 }

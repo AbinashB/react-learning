@@ -6,15 +6,19 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.request.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
 object PluginConfig {
     
+    @OptIn(ExperimentalSerializationApi::class)
     fun Application.configureContentNegotiation() {
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
                 isLenient = true
+                explicitNulls = false
+                encodeDefaults = true
             })
         }
     }

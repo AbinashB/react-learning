@@ -1,3 +1,5 @@
+import java.time.Instant
+
 plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.serialization") version "2.0.21"
@@ -55,9 +57,34 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
+// Task to generate version.properties file
+tasks.register("generateVersionProperties") {
+    val propertiesFile = file("${layout.buildDirectory.get().asFile}/resources/main/version.properties")
+    outputs.file(propertiesFile)
+    
+    // Capture values at configuration time to avoid deprecation warnings
+    val appVersion = project.version.toString()
+    val appGroup = project.group.toString()
+    
+    doLast {
+        propertiesFile.parentFile.mkdirs()
+        propertiesFile.writeText("""
+            version=$appVersion
+            buildTime=${Instant.now()}
+            groupId=$appGroup
+        """.trimIndent())
+    }
+}
+
+// Make processResources depend on generateVersionProperties
+tasks.named("processResources") {
+    dependsOn("generateVersionProperties")
+}
+
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "org.example.ApplicationKt"
+        attributes["Implementation-Version"] = project.version
     }
     // Create a fat JAR with all dependencies
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

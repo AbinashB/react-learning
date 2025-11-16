@@ -17,7 +17,8 @@ data class SupportedCurrenciesResponse(
 @Serializable
 data class HealthResponse(
     val status: String,
-    val service: String
+    val service: String,
+    val version: String? = null
 )
 
 @Serializable
