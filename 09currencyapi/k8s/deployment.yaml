@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency-api
+  labels:
+    app: currency-api
+    version: v1
+spec:
+  # Baseline replicas - HPA will scale this between min and max
+  replicas: 2
+  selector:
+    matchLabels:
+      app: currency-api
+  template:
+    metadata:
+      labels:
+        app: currency-api
+        version: v1
+    spec:
+      containers:
+      - name: currency-api
+        image: currency-api:latest
+        imagePullPolicy: Never  # For local development (Minikube/Kind)
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        # Set INSTANCE_NAME to pod hostname for identification
+        - name: INSTANCE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        # Resource requests and limits (REQUIRED for HPA)
+        resources:
+          requests:
+            cpu: 100m      # 0.1 CPU cores
+            memory: 256Mi  # 256 megabytes
+          limits:
+            cpu: 500m      # 0.5 CPU cores maximum
+            memory: 512Mi  # 512 megabytes maximum
+        # Liveness probe - checks if container is alive
+        # If this fails, Kubernetes will restart the container
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30  # Wait 30s before first check
+          periodSeconds: 10         # Check every 10s
+          timeoutSeconds: 5         # Timeout after 5s
+          failureThreshold: 3       # Restart after 3 consecutive failures
+        # Readiness probe - checks if container is ready to serve traffic
+        # If this fails, pod is removed from service endpoints
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 20  # Wait 20s before first check
+          periodSeconds: 5          # Check every 5s
+          timeoutSeconds: 3         # Timeout after 3s
+          failureThreshold: 3       # Mark unready after 3 consecutive failures
+      # Graceful shutdown
+      terminationGracePeriodSeconds: 30
+

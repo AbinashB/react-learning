@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: currency-api-ingress
+  labels:
+    app: currency-api
+  annotations:
+    # CORS settings (if needed for frontend access)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    
+    # Connection settings
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    
+    # Load balancing settings for proper round-robin
+    # Disable any session affinity/stickiness
+    nginx.ingress.kubernetes.io/upstream-hash-by: ""
+    # Force connection closure to ensure round-robin works
+    nginx.ingress.kubernetes.io/upstream-keepalive-connections: "0"
+    # Use round-robin load balancing (default, but explicit)
+    nginx.ingress.kubernetes.io/load-balance: "round_robin"
+spec:
+  # Use ingressClassName instead of deprecated annotation
+  ingressClassName: nginx
+  rules:
+  # Default rule - matches all requests
+  - host: currency-api.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: currency-api
+            port:
+              number: 80
+  # Alternative: Without host (accessible via IP/localhost)
+  # Uncomment this if you don't want to set up DNS/hosts file
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: currency-api
+            port:
+              number: 80
+
